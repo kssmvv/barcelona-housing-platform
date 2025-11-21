@@ -1,8 +1,20 @@
 import { Building2 } from "lucide-react";
+import barcelonaBg from "@/assets/barcelona.png";
 
 const Hero = () => {
   return (
     <section className="relative pt-12 pb-20 bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute top-0 left-0 w-full h-full z-0"
+        style={{
+          backgroundImage: `url(${barcelonaBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.15 // Low opacity to blend with gradient
+        }}
+      />
+
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute -top-[40%] -right-[20%] w-[70%] h-[70%] rounded-full bg-blue-100/50 blur-3xl" />
@@ -13,7 +25,7 @@ const Hero = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-blue-600 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">Barcelona Home</h2>
 
-          <div className="inline-flex items-center gap-2 bg-white border border-blue-100 text-blue-700 px-4 py-2 rounded-full mb-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm border border-blue-100 text-blue-700 px-4 py-2 rounded-full mb-6 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
             <Building2 className="w-4 h-4" />
             <span className="text-sm font-medium">Barcelona's Trusted Property Platform</span>
           </div>
@@ -25,7 +37,7 @@ const Hero = () => {
             </span>
           </h1>
           
-          <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
+          <p className="text-xl text-slate-700 font-medium mb-8 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200 bg-white/60 backdrop-blur-sm p-4 rounded-xl">
             Get accurate price estimates for Barcelona apartments using advanced AI. 
             Whether you're renting or selling, make informed decisions with our data-driven evaluations.
           </p>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Building, MapPin, Bed, Bath, Ruler, Eye, TrendingUp, TrendingDown, CheckCircle, Heart, Gavel } from "lucide-react";
+import { Building, MapPin, Bed, Bath, Ruler, Eye, TrendingUp, TrendingDown, CheckCircle, Heart, Gavel, Filter, X } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,6 +8,11 @@ import { toast } from "sonner";
 import ListingDetailView from "./ListingDetailView";
 import { useFavorites } from "@/hooks/useFavorites";
 import { getUserId } from "@/utils/session";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 
 interface Listing {
   listing_id: string;
@@ -18,6 +23,10 @@ interface Listing {
     sqm: number;
     bedrooms: number;
     bathrooms: number;
+    has_ac?: boolean;
+    has_pool?: boolean;
+    has_elevator?: boolean;
+    has_terrace?: boolean;
   };
   contact: {
     name: string;
@@ -45,10 +54,23 @@ interface ListingListProps {
 
 const ListingList = ({ onNavigateToMessages, ownerId }: ListingListProps = {}) => {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  // Filters
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [minSqm, setMinSqm] = useState<string>("");
+  const [minBedrooms, setMinBedrooms] = useState<number>(0);
+  const [filterAmenities, setFilterAmenities] = useState({
+    ac: false,
+    pool: false,
+    elevator: false,
+    terrace: false
+  });
 
   const userId = getUserId();
   const { favorites, toggleFavorite } = useFavorites(userId);
@@ -65,6 +87,7 @@ const ListingList = ({ onNavigateToMessages, ownerId }: ListingListProps = {}) =
         if (!response.ok) throw new Error("Failed to fetch listings");
         const data = await response.json();
         setListings(data);
+        setFilteredListings(data);
       } catch (error) {
         console.error("Error:", error);
         toast.error("Could not load listings");
@@ -76,14 +99,60 @@ const ListingList = ({ onNavigateToMessages, ownerId }: ListingListProps = {}) =
     fetchListings();
   }, [ownerId]);
 
+  // Apply Filters
+  useEffect(() => {
+    let result = listings;
+
+    // Favorites
+    if (showFavoritesOnly) {
+      result = result.filter(l => favorites.has(l.listing_id));
+    }
+
+    // Price
+    if (minPrice) {
+      result = result.filter(l => (l.current_highest_bid || l.price) >= parseFloat(minPrice));
+    }
+    if (maxPrice) {
+      result = result.filter(l => (l.current_highest_bid || l.price) <= parseFloat(maxPrice));
+    }
+
+    // Area
+    if (minSqm) {
+      result = result.filter(l => l.features.sqm >= parseFloat(minSqm));
+    }
+
+    // Bedrooms
+    if (minBedrooms > 0) {
+      result = result.filter(l => l.features.bedrooms >= minBedrooms);
+    }
+
+    // Amenities
+    if (filterAmenities.ac) result = result.filter(l => l.features.has_ac);
+    if (filterAmenities.pool) result = result.filter(l => l.features.has_pool);
+    if (filterAmenities.elevator) result = result.filter(l => l.features.has_elevator);
+    if (filterAmenities.terrace) result = result.filter(l => l.features.has_terrace);
+
+    setFilteredListings(result);
+  }, [listings, showFavoritesOnly, favorites, minPrice, maxPrice, minSqm, minBedrooms, filterAmenities]);
+
   const handleViewDetails = (listing: Listing) => {
     setSelectedListing(listing);
     setDetailOpen(true);
   };
 
-  const displayedListings = showFavoritesOnly 
-    ? listings.filter(l => favorites.has(l.listing_id))
-    : listings;
+  const clearFilters = () => {
+    setMinPrice("");
+    setMaxPrice("");
+    setMinSqm("");
+    setMinBedrooms(0);
+    setFilterAmenities({ ac: false, pool: false, elevator: false, terrace: false });
+    setShowFavoritesOnly(false);
+  };
+
+  const activeFilterCount = [
+    minPrice, maxPrice, minSqm, minBedrooms > 0, 
+    filterAmenities.ac, filterAmenities.pool, filterAmenities.elevator, filterAmenities.terrace
+  ].filter(Boolean).length;
 
   if (isLoading) {
     return (
@@ -120,31 +189,163 @@ const ListingList = ({ onNavigateToMessages, ownerId }: ListingListProps = {}) =
               </p>
             </div>
             
-            {!isMyListings && (
-               <Button 
-                  variant={showFavoritesOnly ? "default" : "outline"}
-                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                  className="gap-2"
-               >
-                 <Heart className={`w-4 h-4 ${showFavoritesOnly ? "fill-current" : ""}`} />
-                 {showFavoritesOnly ? "Show All" : "My Favorites"}
-               </Button>
-            )}
+            <div className="flex gap-2">
+                {/* Filter Button (Sheet) */}
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="outline" className="gap-2 relative">
+                            <Filter className="w-4 h-4" />
+                            Filters
+                            {activeFilterCount > 0 && (
+                                <Badge className="absolute -top-2 -right-2 px-1.5 py-0.5 text-[10px] h-5 w-5 flex items-center justify-center rounded-full">
+                                    {activeFilterCount}
+                                </Badge>
+                            )}
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-[400px] sm:w-[540px]">
+                        <SheetHeader>
+                            <SheetTitle>Filter Listings</SheetTitle>
+                        </SheetHeader>
+                        
+                        <div className="py-6 space-y-6">
+                            {/* Price Range */}
+                            <div className="space-y-3">
+                                <Label>Price Range (€)</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input 
+                                        type="number" 
+                                        placeholder="Min" 
+                                        value={minPrice} 
+                                        onChange={(e) => setMinPrice(e.target.value)} 
+                                    />
+                                    <span>-</span>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="Max" 
+                                        value={maxPrice} 
+                                        onChange={(e) => setMaxPrice(e.target.value)} 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Size */}
+                            <div className="space-y-3">
+                                <Label>Minimum Size (m²)</Label>
+                                <Input 
+                                    type="number" 
+                                    placeholder="e.g. 60" 
+                                    value={minSqm} 
+                                    onChange={(e) => setMinSqm(e.target.value)} 
+                                />
+                            </div>
+
+                            {/* Bedrooms */}
+                            <div className="space-y-4">
+                                <div className="flex justify-between">
+                                    <Label>Minimum Bedrooms: {minBedrooms === 0 ? "Any" : minBedrooms}</Label>
+                                </div>
+                                <Slider 
+                                    defaultValue={[0]} 
+                                    max={5} 
+                                    step={1} 
+                                    value={[minBedrooms]}
+                                    onValueChange={(vals) => setMinBedrooms(vals[0])}
+                                />
+                                <div className="flex justify-between text-xs text-slate-400">
+                                    <span>Any</span>
+                                    <span>1</span>
+                                    <span>2</span>
+                                    <span>3</span>
+                                    <span>4</span>
+                                    <span>5+</span>
+                                </div>
+                            </div>
+
+                            {/* Amenities */}
+                            <div className="space-y-4">
+                                <Label>Amenities</Label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex items-center space-x-2">
+                                        <Switch 
+                                            id="ac" 
+                                            checked={filterAmenities.ac}
+                                            onCheckedChange={(c) => setFilterAmenities(prev => ({ ...prev, ac: c }))}
+                                        />
+                                        <Label htmlFor="ac">Air Conditioning</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Switch 
+                                            id="pool" 
+                                            checked={filterAmenities.pool}
+                                            onCheckedChange={(c) => setFilterAmenities(prev => ({ ...prev, pool: c }))}
+                                        />
+                                        <Label htmlFor="pool">Swimming Pool</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Switch 
+                                            id="elevator" 
+                                            checked={filterAmenities.elevator}
+                                            onCheckedChange={(c) => setFilterAmenities(prev => ({ ...prev, elevator: c }))}
+                                        />
+                                        <Label htmlFor="elevator">Elevator</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Switch 
+                                            id="terrace" 
+                                            checked={filterAmenities.terrace}
+                                            onCheckedChange={(c) => setFilterAmenities(prev => ({ ...prev, terrace: c }))}
+                                        />
+                                        <Label htmlFor="terrace">Terrace</Label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <SheetFooter className="flex-col sm:flex-row gap-2">
+                            <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto">
+                                <X className="w-4 h-4 mr-2" /> Clear Filters
+                            </Button>
+                            <SheetClose asChild>
+                                <Button type="submit" className="w-full sm:w-auto">Show {filteredListings.length} Results</Button>
+                            </SheetClose>
+                        </SheetFooter>
+                    </SheetContent>
+                </Sheet>
+
+                {!isMyListings && (
+                <Button 
+                    variant={showFavoritesOnly ? "default" : "outline"}
+                    onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                    className="gap-2"
+                >
+                    <Heart className={`w-4 h-4 ${showFavoritesOnly ? "fill-current" : ""}`} />
+                    {showFavoritesOnly ? "Show All" : "Favorites"}
+                </Button>
+                )}
+            </div>
           </div>
 
-          {displayedListings.length === 0 ? (
+          {filteredListings.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl">
               <Building className="h-12 w-12 text-slate-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-slate-900">
-                {showFavoritesOnly ? "No favorites yet" : (isMyListings ? "You haven't posted any listings yet" : "No listings yet")}
+                {showFavoritesOnly ? "No favorites yet" : (isMyListings ? "You haven't posted any listings yet" : "No matching listings")}
               </h3>
               <p className="text-slate-500">
-                {showFavoritesOnly ? "Mark listings with a heart to see them here." : (isMyListings ? "Create your first listing to see it here." : "Be the first to post your property!")}
+                {showFavoritesOnly 
+                    ? "Mark listings with a heart to see them here." 
+                    : (isMyListings ? "Create your first listing to see it here." : "Try adjusting your filters to find what you're looking for.")}
               </p>
+              {(minPrice || maxPrice || minSqm || minBedrooms > 0 || Object.values(filterAmenities).some(Boolean)) && (
+                  <Button variant="link" onClick={clearFilters} className="mt-2 text-blue-600">
+                      Clear all filters
+                  </Button>
+              )}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {displayedListings.map((listing) => (
+              {filteredListings.map((listing) => (
                 <Card key={listing.listing_id} className="shadow-md hover:shadow-lg transition-shadow duration-300 border-slate-100 overflow-hidden flex flex-col relative group">
                   
                   {/* AI Badge */}
@@ -234,6 +435,15 @@ const ListingList = ({ onNavigateToMessages, ownerId }: ListingListProps = {}) =
                           <span>{listing.features.bathrooms} Bath</span>
                       </div>
                     </div>
+                    
+                    {/* Amenities Preview */}
+                    <div className="flex gap-2 mb-4 flex-wrap">
+                        {listing.features.has_ac && <Badge variant="outline" className="text-[10px] px-1">AC</Badge>}
+                        {listing.features.has_pool && <Badge variant="outline" className="text-[10px] px-1">Pool</Badge>}
+                        {listing.features.has_elevator && <Badge variant="outline" className="text-[10px] px-1">Elevator</Badge>}
+                        {listing.features.has_terrace && <Badge variant="outline" className="text-[10px] px-1">Terrace</Badge>}
+                    </div>
+
                     <p className="text-slate-600 text-sm line-clamp-2 mb-4 italic">
                       "{listing.description || "No description provided."}"
                     </p>
