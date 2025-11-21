@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot } from "lucide-react";
+import { Send, Bot, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatMessage from "./ChatMessage";
+import { cn } from "@/lib/utils";
 
 interface Message {
     role: 'user' | 'assistant';
@@ -87,18 +88,23 @@ const AdvisorChat = ({ context, mode = "general", listingData }: AdvisorChatProp
     };
 
     return (
-        <Card className="h-[500px] flex flex-col mt-8">
-            <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                    <Bot className="w-5 h-5 text-primary" />
+        <Card className="h-[500px] flex flex-col mt-8 shadow-lg border-slate-100 overflow-hidden">
+            <CardHeader className="pb-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="bg-white/20 p-1.5 rounded-full backdrop-blur-sm">
+                        <Bot className="w-5 h-5 text-white" />
+                    </div>
                     {getTitle()}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col gap-4 p-4 pt-0 overflow-hidden">
+            <CardContent className="flex-1 flex flex-col gap-4 p-4 pt-4 overflow-hidden bg-slate-50/50">
                 <ScrollArea className="flex-1 pr-4">
                     <div className="space-y-4">
                         {messages.length === 0 && (
-                            <div className="text-center text-muted-foreground text-sm py-8">
+                            <div className="text-center text-muted-foreground text-sm py-12 flex flex-col items-center gap-3 opacity-70">
+                                <div className="bg-blue-100 p-3 rounded-full">
+                                    <Sparkles className="w-6 h-6 text-blue-600" />
+                                </div>
                                 {mode === "listing" 
                                     ? "Ask me anything about this property or the neighborhood!" 
                                     : "Ask me anything about Barcelona real estate!"}
@@ -106,19 +112,22 @@ const AdvisorChat = ({ context, mode = "general", listingData }: AdvisorChatProp
                         )}
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[80%] rounded-lg px-4 py-3 text-sm leading-relaxed ${
+                                <div className={cn(
+                                    "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm",
                                     msg.role === 'user' 
-                                    ? 'bg-primary text-primary-foreground' 
-                                    : 'bg-muted text-foreground'
-                                }`}>
+                                        ? "bg-blue-600 text-white rounded-tr-sm" 
+                                        : "bg-white text-slate-800 border border-slate-100 rounded-tl-sm"
+                                )}>
                                     <ChatMessage content={msg.content} role={msg.role} />
                                 </div>
                             </div>
                         ))}
                          {isLoading && (
                             <div className="flex justify-start">
-                                <div className="bg-muted text-foreground rounded-lg px-3 py-2 text-sm italic">
-                                    Thinking...
+                                <div className="bg-white border border-slate-100 px-4 py-3 rounded-2xl rounded-tl-sm text-sm flex items-center gap-2 shadow-sm">
+                                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                                 </div>
                             </div>
                         )}
@@ -132,8 +141,14 @@ const AdvisorChat = ({ context, mode = "general", listingData }: AdvisorChatProp
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                         disabled={isLoading}
+                        className="bg-white border-slate-200 focus-visible:ring-blue-500"
                     />
-                    <Button size="icon" onClick={handleSend} disabled={isLoading || !input.trim()}>
+                    <Button 
+                        size="icon" 
+                        onClick={handleSend} 
+                        disabled={isLoading || !input.trim()}
+                        className="bg-blue-600 hover:bg-blue-700"
+                    >
                         <Send className="w-4 h-4" />
                     </Button>
                 </div>
