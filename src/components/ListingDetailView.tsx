@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, MapPin, Bed, Bath, Ruler, Euro, Phone, Mail, MessageCircle, Send, ArrowLeft, Heart, Gavel, Clock, Eye } from "lucide-react";
+import { X, MapPin, Bed, Bath, Ruler, Euro, Phone, Mail, MessageCircle, Send, ArrowLeft, Heart, Gavel, Clock, Eye, Sparkles, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,7 @@ import L from "leaflet";
 import ChatMessage from "./ChatMessage";
 import { getUserId } from "@/utils/session";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 // Fix Leaflet icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -518,20 +519,23 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner, isFavorite, onTog
 
           {/* Right: AI Chat Sidebar */}
           <div className="w-[400px] border-l bg-slate-50 flex flex-col">
-            <div className="p-4 border-b bg-orange-50">
-              <h3 className="flex items-center gap-2 font-semibold text-orange-900">
-                <MessageCircle className="w-5 h-5" />
+            <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+              <h3 className="flex items-center gap-2 font-semibold">
+                <Bot className="w-5 h-5" />
                 Ask AI About This Property
               </h3>
-              <p className="text-xs text-orange-700 mt-1">
-                Get insights about the neighborhood, valuation, and more
+              <p className="text-xs text-blue-100 mt-1 opacity-90">
+                Insights on price, neighborhood, and potential.
               </p>
             </div>
 
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-3">
+            <ScrollArea className="flex-1 p-4 bg-slate-50/50">
+              <div className="space-y-4">
                 {messages.length === 0 && (
-                  <div className="text-center text-sm text-slate-500 py-8">
+                  <div className="text-center text-sm text-slate-500 py-8 opacity-70">
+                    <div className="bg-blue-100 p-3 rounded-full w-fit mx-auto mb-3">
+                        <Sparkles className="w-6 h-6 text-blue-600" />
+                    </div>
                     Ask me anything about this property!
                   </div>
                 )}
@@ -541,11 +545,12 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner, isFavorite, onTog
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[85%] px-4 py-3 rounded-xl text-sm leading-relaxed ${
-                        msg.role === "user"
-                          ? "bg-orange-500 text-white"
-                          : "bg-white text-slate-900 border border-slate-200"
-                      }`}
+                      className={cn(
+                        "max-w-[85%] px-4 py-3 text-sm shadow-sm",
+                        msg.role === "user" 
+                            ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm" 
+                            : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-sm"
+                      )}
                     >
                       <ChatMessage content={msg.content} role={msg.role} />
                     </div>
@@ -553,8 +558,10 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner, isFavorite, onTog
                 ))}
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-slate-200 px-4 py-3 rounded-xl text-sm italic text-slate-600">
-                      Thinking...
+                    <div className="bg-white border border-slate-100 px-4 py-3 rounded-2xl rounded-tl-sm text-sm flex items-center gap-2 shadow-sm">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
                   </div>
                 )}
@@ -563,20 +570,20 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner, isFavorite, onTog
             </ScrollArea>
 
             <div className="p-4 border-t bg-white">
-              <div className="flex gap-2">
+              <div className="flex gap-2 relative">
                 <Input
                   placeholder="Ask about this property..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
                   disabled={isLoading}
-                  className="flex-1"
+                  className="pr-12 py-6 bg-slate-50 border-slate-200 focus-visible:ring-blue-500 rounded-xl"
                 />
                 <Button
                   size="icon"
                   onClick={handleSendMessage}
                   disabled={isLoading || !input.trim()}
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="absolute right-1.5 top-1.5 h-9 w-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all"
                 >
                   <Send className="w-4 h-4" />
                 </Button>

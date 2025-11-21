@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, Sparkles, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import ChatMessage from "./ChatMessage";
+import { cn } from "@/lib/utils";
 
 interface Message {
   role: "user" | "assistant";
@@ -93,66 +94,114 @@ const FloatingAdvisor = ({ context, mode = "general", listingData }: FloatingAdv
     if (mode === "listing" && listingData) {
       return `Ask me about this property in ${listingData.neighborhood || "Barcelona"}! I can explain the AI valuation, neighborhood insights, investment potential, and more.`;
     }
-    return "Hi! Ask me about Barcelona neighborhoods, prices, safety, or how to use our platform.";
+    return "Hi! I'm your Barcelona AI Advisor. Ask me about neighborhoods, prices, safety, or how to use the platform.";
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
       {open && (
-        <Card ref={containerRef} className="w-[360px] h-[480px] shadow-2xl border border-orange-200 flex flex-col mb-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="flex items-center justify-between px-4 py-3 border-b bg-orange-50">
-            <div>
-              <p className="text-sm font-semibold text-orange-700">
-                {mode === "listing" ? "Property AI Assistant" : "AI Real Estate Advisor"}
-              </p>
-              <p className="text-xs text-orange-600">
-                {mode === "listing" ? "Ask about this listing" : "Ask about Barcelona market"}
-              </p>
+        <Card 
+            ref={containerRef} 
+            className="w-[380px] h-[550px] shadow-2xl border-0 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-300 rounded-2xl ring-1 ring-slate-200"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold">
+                  {mode === "listing" ? "Property Assistant" : "AI Real Estate Advisor"}
+                </p>
+                <p className="text-[10px] text-blue-100 font-medium opacity-90 uppercase tracking-wider">
+                  Powered by OpenAI
+                </p>
+              </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setOpen(false)}
+                className="text-white hover:bg-white/20 hover:text-white rounded-full h-8 w-8"
+            >
               <X className="w-4 h-4" />
             </Button>
           </div>
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-slate-50/50">
             {messages.length === 0 && (
-              <p className="text-sm text-muted-foreground">{getInitialMessage()}</p>
+              <div className="flex flex-col items-center justify-center h-full text-center p-4 opacity-70">
+                 <div className="bg-blue-100 p-4 rounded-full mb-4">
+                    <Bot className="w-8 h-8 text-blue-600" />
+                 </div>
+                 <p className="text-sm text-slate-600 max-w-[240px] leading-relaxed">
+                    {getInitialMessage()}
+                 </p>
+              </div>
             )}
+            
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[85%] px-4 py-3 rounded-xl text-sm leading-relaxed ${msg.role === "user" ? "bg-orange-500 text-white" : "bg-orange-100 text-orange-900"}`}>
+                <div 
+                    className={cn(
+                        "max-w-[85%] px-4 py-3 text-sm shadow-sm",
+                        msg.role === "user" 
+                            ? "bg-blue-600 text-white rounded-2xl rounded-tr-sm" 
+                            : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-sm"
+                    )}
+                >
                   <ChatMessage content={msg.content} role={msg.role} />
                 </div>
               </div>
             ))}
+            
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-orange-100 text-orange-900 px-3 py-2 rounded-xl text-sm italic">
-                  Thinking...
+                <div className="bg-white border border-slate-100 px-4 py-3 rounded-2xl rounded-tl-sm text-sm flex items-center gap-2 shadow-sm">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
-          <div className="border-t p-3 flex gap-2">
-            <Input
-              placeholder={getPlaceholderText()}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !isLoading && ask()}
-              disabled={isLoading}
-            />
-            <Button size="icon" onClick={ask} disabled={isLoading || !input.trim()}>
-              <Send className="w-4 h-4" />
-            </Button>
+
+          {/* Input Area */}
+          <div className="p-4 bg-white border-t border-slate-100">
+            <div className="flex gap-2 relative">
+              <Input
+                placeholder={getPlaceholderText()}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && !isLoading && ask()}
+                disabled={isLoading}
+                className="pr-12 py-6 bg-slate-50 border-slate-200 focus-visible:ring-blue-500 rounded-xl"
+              />
+              <Button 
+                size="icon" 
+                onClick={ask} 
+                disabled={isLoading || !input.trim()}
+                className="absolute right-1.5 top-1.5 h-9 w-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </Card>
       )}
+      
       <Button 
         size="lg" 
-        className="rounded-full h-14 w-14 shadow-lg bg-orange-500 hover:bg-orange-600" 
+        className={cn(
+            "rounded-full h-14 w-14 shadow-xl transition-all duration-300 hover:scale-105",
+            open ? "bg-slate-800 hover:bg-slate-900 rotate-90" : "bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90"
+        )}
         onClick={() => setOpen(!open)}
       >
-        <MessageCircle className="w-6 h-6 text-white" />
+        {open ? <X className="w-6 h-6 text-white" /> : <MessageCircle className="w-6 h-6 text-white" />}
       </Button>
     </div>
   );
