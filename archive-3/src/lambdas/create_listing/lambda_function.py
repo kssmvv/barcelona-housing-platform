@@ -109,6 +109,12 @@ def lambda_handler(event, context):
             'contact': body['contact'],
             'description': body.get('description', ''),
             'coordinates': float_to_decimal(body.get('coordinates', {})),
+            # Auction Fields
+            'sale_type': body.get('sale_type', 'fixed'), # fixed or auction
+            'auction_end_time': body.get('auction_end_time'),
+            'starting_bid': float_to_decimal(body.get('starting_bid', 0)) if body.get('sale_type') == 'auction' else None,
+            'current_highest_bid': float_to_decimal(body.get('starting_bid', 0)) if body.get('sale_type') == 'auction' else None,
+            'bid_count': 0 if body.get('sale_type') == 'auction' else None,
             # New AI Fields
             'ai_valuation': {
                 'estimated_price': float_to_decimal(ai_price) if ai_price else None,
