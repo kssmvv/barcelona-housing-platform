@@ -88,7 +88,8 @@ const Footer = () => {
 
         <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
           <p>© 2024 Barcelona Home. All rights reserved.</p>
-          <p className="text-xs mt-2 text-blue-500 font-semibold">v3.6 - Modern Navigation + My Listings</p>
+          <p className="text-xs mt-2 text-blue-500 font-semibold">v4.0 - Auctions & Favorites</p>
+          <p className="text-xs text-slate-400 mt-1">User ID: {userId}</p>
         </div>
       </div>
     </footer>

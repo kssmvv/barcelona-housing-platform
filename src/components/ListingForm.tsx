@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building, Home, Bath, Bed, Euro, Mail, Phone, FileText, TrendingUp, TrendingDown, CheckCircle, Snowflake, Waves, ArrowUpFromLine, Sun } from "lucide-react";
+import { Building, Home, Bath, Bed, Euro, Mail, Phone, FileText, TrendingUp, TrendingDown, CheckCircle, Snowflake, Waves, ArrowUpFromLine, Sun, Gavel, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { getUserId } from "@/utils/session";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ListingForm = () => {
   // Property Details
@@ -25,6 +26,10 @@ const ListingForm = () => {
   const [hasElevator, setHasElevator] = useState(false);
   const [hasTerrace, setHasTerrace] = useState(false);
   
+  // Auction Details
+  const [saleType, setSaleType] = useState<'fixed' | 'auction'>('fixed');
+  const [auctionDuration, setAuctionDuration] = useState("7");
+
   // Contact Details
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,11 +45,21 @@ const ListingForm = () => {
     setAiFeedback(null);
 
     try {
+      let auction_end_time = null;
+      if (saleType === 'auction') {
+          const date = new Date();
+          date.setDate(date.getDate() + parseInt(auctionDuration));
+          auction_end_time = date.toISOString();
+      }
+
       const payload = {
         owner_id: getUserId(),
         address,
         neighborhood,
         price: parseFloat(price),
+        sale_type: saleType,
+        starting_bid: saleType === 'auction' ? parseFloat(price) : null,
+        auction_end_time: auction_end_time,
         features: {
             sqm: parseFloat(sqm),
             bedrooms: parseInt(bedrooms),
@@ -86,16 +101,6 @@ const ListingForm = () => {
       toast.success("Listing Posted Successfully!", {
         description: "Your property is now live on the marketplace."
       });
-      
-      // Reset form (optional - maybe keep values if they want to adjust price?)
-      // setAddress("");
-      // setNeighborhood("");
-      // setSqm("");
-      // setPrice("");
-      // setDescription("");
-      // setName("");
-      // setEmail("");
-      // setPhone("");
 
     } catch (error) {
       console.error("Error:", error);
@@ -171,9 +176,23 @@ const ListingForm = () => {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-8">
                 
+                {/* Sale Type */}
+                <div className="flex justify-center">
+                    <Tabs value={saleType} onValueChange={(v) => setSaleType(v as any)} className="w-[400px]">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="fixed" className="flex gap-2 items-center">
+                                <Home className="w-4 h-4" /> Fixed Price
+                            </TabsTrigger>
+                            <TabsTrigger value="auction" className="flex gap-2 items-center">
+                                <Gavel className="w-4 h-4" /> Auction
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
+
                 {/* Location & Price */}
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-slate-700 border-b pb-2">Location & Price</h3>
+                    <h3 className="text-lg font-semibold text-slate-700 border-b pb-2">Location & Pricing</h3>
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="address">Address</Label>
@@ -199,14 +218,17 @@ const ListingForm = () => {
                                 className="bg-slate-50 border-slate-200"
                             />
                         </div>
+                        
                         <div className="space-y-2">
-                            <Label htmlFor="price">Asking Price (€)</Label>
+                            <Label htmlFor="price">
+                                {saleType === 'auction' ? 'Starting Bid (€)' : 'Asking Price (€)'}
+                            </Label>
                             <div className="relative">
                                 <Euro className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                                 <Input 
                                     id="price" 
                                     type="number"
-                                    placeholder="250000"
+                                    placeholder={saleType === 'auction' ? "150000" : "250000"}
                                     value={price}
                                     onChange={(e) => setPrice(e.target.value)}
                                     required
@@ -214,6 +236,26 @@ const ListingForm = () => {
                                 />
                             </div>
                         </div>
+
+                        {saleType === 'auction' && (
+                            <div className="space-y-2">
+                                <Label htmlFor="duration">Auction Duration</Label>
+                                <div className="relative">
+                                    <Clock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                                    <Select value={auctionDuration} onValueChange={setAuctionDuration}>
+                                        <SelectTrigger className="pl-9 bg-slate-50 border-slate-200">
+                                            <SelectValue placeholder="Select duration" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1">1 Day</SelectItem>
+                                            <SelectItem value="3">3 Days</SelectItem>
+                                            <SelectItem value="7">7 Days</SelectItem>
+                                            <SelectItem value="14">14 Days</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -345,7 +387,7 @@ const ListingForm = () => {
                   disabled={isLoading}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg h-12 text-lg mt-4"
                 >
-                  {isLoading ? "Analyzing & Posting..." : "Post Listing"}
+                  {isLoading ? "Analyzing & Posting..." : (saleType === 'auction' ? "Start Auction" : "Post Listing")}
                 </Button>
               </form>
             </CardContent>

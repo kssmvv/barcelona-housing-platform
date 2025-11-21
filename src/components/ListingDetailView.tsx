@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, MapPin, Bed, Bath, Ruler, Euro, Phone, Mail, MessageCircle, Send, ArrowLeft } from "lucide-react";
+import { X, MapPin, Bed, Bath, Ruler, Euro, Phone, Mail, MessageCircle, Send, ArrowLeft, Heart, Gavel, Clock, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,15 +49,27 @@ interface Listing {
     estimated_price: number;
     diff_pct: number;
   };
+  sale_type?: 'fixed' | 'auction';
+  auction_end_time?: string;
+  current_highest_bid?: number;
+  bid_count?: number;
+  highest_bidder_id?: string;
+  starting_bid?: number;
+  view_count?: number;
 }
 
 interface ListingDetailViewProps {
   listing: Listing;
   onClose: () => void;
   onMessageOwner?: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
-const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailViewProps) => {
+const TRACK_VIEW_URL = "https://tmmtqmnxanpapvmsm62ir4mkjq0iqiso.lambda-url.us-east-1.on.aws/";
+const PLACE_BID_URL = "https://qsughukc63qq7ezc2uveqo7reu0yfmsc.lambda-url.us-east-1.on.aws/";
+
+const ListingDetailView = ({ listing, onClose, onMessageOwner, isFavorite, onToggleFavorite }: ListingDetailViewProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +77,30 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailVi
   const [messageInput, setMessageInput] = useState("Hi, I'm interested in this property. Is it still available?");
   const [isSending, setIsSending] = useState(false);
   const [coordinates, setCoordinates] = useState<[number, number]>([41.3851, 2.1734]); // Barcelona center default
+  const [bidAmount, setBidAmount] = useState<string>("");
+  const [isBidding, setIsBidding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const userId = getUserId();
+
+  // Track view on mount
+  useEffect(() => {
+    const trackView = async () => {
+      try {
+        await fetch(TRACK_VIEW_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+             listing_id: listing.listing_id,
+             created_at: listing.created_at,
+             viewer_id: userId
+          })
+        });
+      } catch (e) {
+        console.error("Failed to track view", e);
+      }
+    };
+    trackView();
+  }, [listing.listing_id, listing.created_at, userId]);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -137,6 +172,46 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailVi
     }
   };
 
+  const handlePlaceBid = async () => {
+    const amount = parseFloat(bidAmount);
+    const currentPrice = listing.current_highest_bid || listing.starting_bid || listing.price;
+    
+    if (isNaN(amount) || amount <= currentPrice) {
+      toast.error(`Bid must be higher than €${currentPrice.toLocaleString()}`);
+      return;
+    }
+
+    setIsBidding(true);
+    try {
+      const response = await fetch(PLACE_BID_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listing_id: listing.listing_id,
+          created_at: listing.created_at,
+          bidder_id: userId,
+          amount: amount
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to place bid');
+      }
+
+      const data = await response.json();
+      toast.success("Bid placed successfully!");
+      // Ideally update local state to reflect new price immediately
+      listing.current_highest_bid = amount; 
+      listing.bid_count = (listing.bid_count || 0) + 1;
+      setBidAmount("");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsBidding(false);
+    }
+  };
+
   const getValuationBadge = () => {
     if (!listing.ai_valuation) return null;
     const { status } = listing.ai_valuation;
@@ -155,7 +230,7 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailVi
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-in fade-in zoom-in duration-300">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b bg-slate-50">
@@ -163,13 +238,31 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailVi
             <div className="flex items-center gap-3 mb-2">
               <h2 className="text-2xl font-bold text-slate-900">{listing.address}</h2>
               {getValuationBadge()}
+              {listing.sale_type === 'auction' && (
+                  <Badge className="bg-purple-600 text-white gap-1 animate-pulse">
+                      <Gavel className="w-3 h-3" /> Auction
+                  </Badge>
+              )}
             </div>
             <div className="flex items-center text-slate-600">
               <MapPin className="w-4 h-4 mr-1" />
               {listing.neighborhood}
+              <span className="mx-2 text-slate-300">|</span>
+              <Eye className="w-4 h-4 mr-1" />
+              {(listing.view_count || 0) + 1} views
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {onToggleFavorite && (
+               <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onToggleFavorite}
+                  className={isFavorite ? "text-red-500 border-red-200 bg-red-50" : "text-slate-400"}
+               >
+                  <Heart className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} />
+               </Button>
+            )}
             <Button variant="outline" onClick={onClose} className="hidden md:flex">
               Back to Results
             </Button>
@@ -179,42 +272,89 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailVi
           </div>
         </div>
         
-        <div className="px-6 py-2 bg-slate-100 text-xs text-slate-500 border-b">
-            DEBUG: Owner ID: {listing.owner_id || "N/A (Old Listing)"} | Listing ID: {listing.listing_id.substring(0, 8)}...
+        <div className="px-6 py-2 bg-slate-100 text-xs text-slate-500 border-b flex justify-between">
+            <span>Listing ID: {listing.listing_id.substring(0, 8)}...</span>
+            <span>Owner ID: {listing.owner_id || "N/A"}</span>
         </div>
 
         {/* Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left: Property Details */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {/* Price */}
-            <Card className="border-2 border-orange-200 bg-orange-50">
+            {/* Price / Auction */}
+            <Card className={`border-2 ${listing.sale_type === 'auction' ? 'border-purple-200 bg-purple-50' : 'border-orange-200 bg-orange-50'}`}>
               <CardContent className="p-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-slate-600 mb-1">Asking Price</p>
-                    <p className="text-4xl font-bold text-slate-900">
-                      €{listing.price.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-slate-500 mt-1">
-                      €{Math.round(listing.price / listing.features.sqm).toLocaleString()}/m²
-                    </p>
-                  </div>
-                  {listing.ai_valuation && (
-                    <div className="text-right">
-                      <p className="text-sm text-slate-600 mb-1">AI Estimate</p>
-                      <p className="text-2xl font-semibold text-blue-600">
-                        €{listing.ai_valuation.estimated_price.toLocaleString()}
-                      </p>
-                      <p className={`text-sm font-medium ${
-                        listing.ai_valuation.diff_pct < 0 ? "text-green-600" : "text-red-600"
-                      }`}>
-                        {listing.ai_valuation.diff_pct > 0 ? "+" : ""}
-                        {listing.ai_valuation.diff_pct.toFixed(1)}%
-                      </p>
+                {listing.sale_type === 'auction' ? (
+                   <div className="space-y-4">
+                      <div className="flex justify-between items-start">
+                          <div>
+                              <p className="text-sm font-medium text-purple-700 mb-1 flex items-center gap-2">
+                                  <Clock className="w-4 h-4" /> Auction Ends: {new Date(listing.auction_end_time || "").toLocaleDateString()}
+                              </p>
+                              <p className="text-4xl font-bold text-slate-900">
+                                  €{(listing.current_highest_bid || listing.starting_bid || listing.price).toLocaleString()}
+                              </p>
+                              <p className="text-sm text-slate-500 mt-1">
+                                  Current Highest Bid • {listing.bid_count || 0} bids
+                              </p>
+                          </div>
+                          <div className="text-right">
+                              <p className="text-sm text-slate-600 mb-1">Starting Price</p>
+                              <p className="text-xl font-semibold text-slate-700">
+                                  €{(listing.starting_bid || listing.price).toLocaleString()}
+                              </p>
+                          </div>
+                      </div>
+                      
+                      {/* Bidding Interface */}
+                      <div className="bg-white p-4 rounded-lg border border-purple-100 flex gap-4 items-end">
+                          <div className="flex-1">
+                              <label className="text-xs font-medium text-slate-500 mb-1 block">Your Bid (€)</label>
+                              <Input 
+                                  type="number" 
+                                  placeholder={`Min €${((listing.current_highest_bid || listing.starting_bid || listing.price) + 100).toLocaleString()}`}
+                                  value={bidAmount}
+                                  onChange={(e) => setBidAmount(e.target.value)}
+                                  className="border-purple-200 focus:border-purple-500"
+                              />
+                          </div>
+                          <Button 
+                              className="bg-purple-600 hover:bg-purple-700 text-white"
+                              onClick={handlePlaceBid}
+                              disabled={isBidding || !bidAmount}
+                          >
+                              {isBidding ? "Placing Bid..." : "Place Bid"}
+                              <Gavel className="w-4 h-4 ml-2" />
+                          </Button>
+                      </div>
+                   </div>
+                ) : (
+                    <div className="flex justify-between items-center">
+                    <div>
+                        <p className="text-sm text-slate-600 mb-1">Asking Price</p>
+                        <p className="text-4xl font-bold text-slate-900">
+                        €{listing.price.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-slate-500 mt-1">
+                        €{Math.round(listing.price / listing.features.sqm).toLocaleString()}/m²
+                        </p>
                     </div>
-                  )}
-                </div>
+                    {listing.ai_valuation && (
+                        <div className="text-right">
+                        <p className="text-sm text-slate-600 mb-1">AI Estimate</p>
+                        <p className="text-2xl font-semibold text-blue-600">
+                            €{listing.ai_valuation.estimated_price.toLocaleString()}
+                        </p>
+                        <p className={`text-sm font-medium ${
+                            listing.ai_valuation.diff_pct < 0 ? "text-green-600" : "text-red-600"
+                        }`}>
+                            {listing.ai_valuation.diff_pct > 0 ? "+" : ""}
+                            {listing.ai_valuation.diff_pct.toFixed(1)}%
+                        </p>
+                        </div>
+                    )}
+                    </div>
+                )}
               </CardContent>
             </Card>
 
@@ -450,4 +590,3 @@ const ListingDetailView = ({ listing, onClose, onMessageOwner }: ListingDetailVi
 };
 
 export default ListingDetailView;
-
