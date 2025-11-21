@@ -1,0 +1,415 @@
+[
+  {
+    "neighborhood": "Can Bar",
+    "district": "7",
+    "price_2015_eur_sqm": 2598.0,
+    "slope_per_year": -51.96,
+    "price_2025_eur_sqm": 2078.4
+  },
+  {
+    "neighborhood": "Ciutat Meridiana (5)",
+    "district": "8",
+    "price_2015_eur_sqm": 1212.0,
+    "slope_per_year": -24.24,
+    "price_2025_eur_sqm": 969.6
+  },
+  {
+    "neighborhood": "Diagonal Mar i el Front Martim del Poblenou",
+    "district": "10",
+    "price_2015_eur_sqm": 6506.0,
+    "slope_per_year": -130.12,
+    "price_2025_eur_sqm": 5204.8
+  },
+  {
+    "neighborhood": "Horta",
+    "district": "7",
+    "price_2015_eur_sqm": 2192.0,
+    "slope_per_year": -43.84,
+    "price_2025_eur_sqm": 1753.6
+  },
+  {
+    "neighborhood": "Hostafrancs",
+    "district": "3",
+    "price_2015_eur_sqm": 2742.0,
+    "slope_per_year": 87.56,
+    "price_2025_eur_sqm": 3617.6
+  },
+  {
+    "neighborhood": "Les Tres Torres",
+    "district": "5",
+    "price_2015_eur_sqm": 5145.0,
+    "slope_per_year": -102.9,
+    "price_2025_eur_sqm": 4116.0
+  },
+  {
+    "neighborhood": "Navas",
+    "district": "9",
+    "price_2015_eur_sqm": 2401.0,
+    "slope_per_year": -24.17,
+    "price_2025_eur_sqm": 2159.32
+  },
+  {
+    "neighborhood": "Pedralbes",
+    "district": "4",
+    "price_2015_eur_sqm": 5436.0,
+    "slope_per_year": -108.72,
+    "price_2025_eur_sqm": 4348.8
+  },
+  {
+    "neighborhood": "Porta",
+    "district": "8",
+    "price_2015_eur_sqm": 2174.0,
+    "slope_per_year": 16.29,
+    "price_2025_eur_sqm": 2336.95
+  },
+  {
+    "neighborhood": "Provenals del Poblenou",
+    "district": "10",
+    "price_2015_eur_sqm": 3397.0,
+    "slope_per_year": -67.94,
+    "price_2025_eur_sqm": 2717.6
+  },
+  {
+    "neighborhood": "Sant Andreu",
+    "district": "9",
+    "price_2015_eur_sqm": 2391.0,
+    "slope_per_year": -47.82,
+    "price_2025_eur_sqm": 1912.8
+  },
+  {
+    "neighborhood": "Sant Antoni",
+    "district": "2",
+    "price_2015_eur_sqm": 3369.0,
+    "slope_per_year": 69.36,
+    "price_2025_eur_sqm": 4062.57
+  },
+  {
+    "neighborhood": "Sant Gens dels Agudells (1)",
+    "district": "7",
+    "price_2015_eur_sqm": 2140.0,
+    "slope_per_year": -42.8,
+    "price_2025_eur_sqm": 1712.0
+  },
+  {
+    "neighborhood": "Sant Gervasi - Galvany",
+    "district": "5",
+    "price_2015_eur_sqm": 4484.0,
+    "slope_per_year": -89.68,
+    "price_2025_eur_sqm": 3587.2
+  },
+  {
+    "neighborhood": "Sant Gervasi - la Bonanova",
+    "district": "5",
+    "price_2015_eur_sqm": 4235.0,
+    "slope_per_year": -84.7,
+    "price_2025_eur_sqm": 3388.0
+  },
+  {
+    "neighborhood": "Sant Mart de Provenals",
+    "district": "10",
+    "price_2015_eur_sqm": 2273.0,
+    "slope_per_year": -45.46,
+    "price_2025_eur_sqm": 1818.4
+  },
+  {
+    "neighborhood": "Sant Pere, Santa Caterina i la Ribera",
+    "district": "1",
+    "price_2015_eur_sqm": 3827.0,
+    "slope_per_year": 203.83,
+    "price_2025_eur_sqm": 5865.32
+  },
+  {
+    "neighborhood": "Sants",
+    "district": "3",
+    "price_2015_eur_sqm": 2816.0,
+    "slope_per_year": 35.25,
+    "price_2025_eur_sqm": 3168.45
+  },
+  {
+    "neighborhood": "Sants-Badal",
+    "district": "3",
+    "price_2015_eur_sqm": 2607.0,
+    "slope_per_year": -52.14,
+    "price_2025_eur_sqm": 2085.6
+  },
+  {
+    "neighborhood": "Sarri",
+    "district": "5",
+    "price_2015_eur_sqm": 4704.0,
+    "slope_per_year": -94.08,
+    "price_2025_eur_sqm": 3763.2
+  },
+  {
+    "neighborhood": "Vallcarca i els Penitents",
+    "district": "6",
+    "price_2015_eur_sqm": 2862.0,
+    "slope_per_year": -57.24,
+    "price_2025_eur_sqm": 2289.6
+  },
+  {
+    "neighborhood": "Verdun",
+    "district": "8",
+    "price_2015_eur_sqm": 1710.0,
+    "slope_per_year": -29.03,
+    "price_2025_eur_sqm": 1419.73
+  },
+  {
+    "neighborhood": "Vilapicina i la Torre Llobeta",
+    "district": "8",
+    "price_2015_eur_sqm": 2193.0,
+    "slope_per_year": -36.08,
+    "price_2025_eur_sqm": 1832.18
+  },
+  {
+    "neighborhood": "el Baix Guinard",
+    "district": "7",
+    "price_2015_eur_sqm": 2841.0,
+    "slope_per_year": -56.82,
+    "price_2025_eur_sqm": 2272.8
+  },
+  {
+    "neighborhood": "el Barri Gtic",
+    "district": "1",
+    "price_2015_eur_sqm": 4236.0,
+    "slope_per_year": -84.72,
+    "price_2025_eur_sqm": 3388.8
+  },
+  {
+    "neighborhood": "el Bess i el Maresme",
+    "district": "10",
+    "price_2015_eur_sqm": 1951.0,
+    "slope_per_year": -39.02,
+    "price_2025_eur_sqm": 1560.8
+  },
+  {
+    "neighborhood": "el Camp d'en Grassot i Gràcia Nova",
+    "district": "6",
+    "price_2015_eur_sqm": 3219.0,
+    "slope_per_year": 11.74,
+    "price_2025_eur_sqm": 3336.35
+  },
+  {
+    "neighborhood": "el Camp de l'Arpa del Clot",
+    "district": "10",
+    "price_2015_eur_sqm": 2619.0,
+    "slope_per_year": -4.54,
+    "price_2025_eur_sqm": 2573.62
+  },
+  {
+    "neighborhood": "el Carmel",
+    "district": "7",
+    "price_2015_eur_sqm": 1693.0,
+    "slope_per_year": -33.86,
+    "price_2025_eur_sqm": 1354.4
+  },
+  {
+    "neighborhood": "el Clot",
+    "district": "10",
+    "price_2015_eur_sqm": 2505.0,
+    "slope_per_year": -24.54,
+    "price_2025_eur_sqm": 2259.62
+  },
+  {
+    "neighborhood": "el Coll",
+    "district": "6",
+    "price_2015_eur_sqm": 2252.0,
+    "slope_per_year": -45.04,
+    "price_2025_eur_sqm": 1801.6
+  },
+  {
+    "neighborhood": "el Congrs i els Indians",
+    "district": "9",
+    "price_2015_eur_sqm": 2216.0,
+    "slope_per_year": -44.32,
+    "price_2025_eur_sqm": 1772.8
+  },
+  {
+    "neighborhood": "el Fort Pienc",
+    "district": "2",
+    "price_2015_eur_sqm": 3228.0,
+    "slope_per_year": -26.79,
+    "price_2025_eur_sqm": 2960.07
+  },
+  {
+    "neighborhood": "el Guinard",
+    "district": "7",
+    "price_2015_eur_sqm": 2506.0,
+    "slope_per_year": -50.12,
+    "price_2025_eur_sqm": 2004.8
+  },
+  {
+    "neighborhood": "el Parc i la Llacuna del Poblenou",
+    "district": "10",
+    "price_2015_eur_sqm": 2956.0,
+    "slope_per_year": -6.7,
+    "price_2025_eur_sqm": 2889.0
+  },
+  {
+    "neighborhood": "el Poble Sec-AEI Parc Montjuc",
+    "district": "3",
+    "price_2015_eur_sqm": 2815.0,
+    "slope_per_year": -56.3,
+    "price_2025_eur_sqm": 2252.0
+  },
+  {
+    "neighborhood": "el Poblenou",
+    "district": "10",
+    "price_2015_eur_sqm": 3606.0,
+    "slope_per_year": 70.61,
+    "price_2025_eur_sqm": 4312.05
+  },
+  {
+    "neighborhood": "el Putxet i el Farr",
+    "district": "5",
+    "price_2015_eur_sqm": 3465.0,
+    "slope_per_year": -69.3,
+    "price_2025_eur_sqm": 2772.0
+  },
+  {
+    "neighborhood": "el Raval",
+    "district": "1",
+    "price_2015_eur_sqm": 2775.0,
+    "slope_per_year": 142.95,
+    "price_2025_eur_sqm": 4204.48
+  },
+  {
+    "neighborhood": "el Tur de la Peira (3)",
+    "district": "8",
+    "price_2015_eur_sqm": 1887.0,
+    "slope_per_year": -37.74,
+    "price_2025_eur_sqm": 1509.6
+  },
+  {
+    "neighborhood": "l'Antiga Esquerra de l'Eixample",
+    "district": "2",
+    "price_2015_eur_sqm": 3999.0,
+    "slope_per_year": -79.98,
+    "price_2025_eur_sqm": 3199.2
+  },
+  {
+    "neighborhood": "la Barceloneta",
+    "district": "1",
+    "price_2015_eur_sqm": 4043.0,
+    "slope_per_year": 421.62,
+    "price_2025_eur_sqm": 8259.22
+  },
+  {
+    "neighborhood": "la Bordeta",
+    "district": "3",
+    "price_2015_eur_sqm": 2361.0,
+    "slope_per_year": 6.85,
+    "price_2025_eur_sqm": 2429.47
+  },
+  {
+    "neighborhood": "la Dreta de l'Eixample",
+    "district": "2",
+    "price_2015_eur_sqm": 4961.0,
+    "slope_per_year": -99.22,
+    "price_2025_eur_sqm": 3968.8
+  },
+  {
+    "neighborhood": "la Font de la Guatlla",
+    "district": "3",
+    "price_2015_eur_sqm": 2582.0,
+    "slope_per_year": 1.16,
+    "price_2025_eur_sqm": 2593.58
+  },
+  {
+    "neighborhood": "la Marina de Port",
+    "district": "3",
+    "price_2015_eur_sqm": 2174.0,
+    "slope_per_year": -43.48,
+    "price_2025_eur_sqm": 1739.2
+  },
+  {
+    "neighborhood": "la Maternitat i Sant Ramon",
+    "district": "4",
+    "price_2015_eur_sqm": 3281.0,
+    "slope_per_year": -65.62,
+    "price_2025_eur_sqm": 2624.8
+  },
+  {
+    "neighborhood": "la Nova Esquerra de l'Eixample",
+    "district": "2",
+    "price_2015_eur_sqm": 3340.0,
+    "slope_per_year": -42.12,
+    "price_2025_eur_sqm": 2918.85
+  },
+  {
+    "neighborhood": "la Prosperitat",
+    "district": "8",
+    "price_2015_eur_sqm": 1861.0,
+    "slope_per_year": -18.56,
+    "price_2025_eur_sqm": 1675.4
+  },
+  {
+    "neighborhood": "la Sagrada Famlia",
+    "district": "2",
+    "price_2015_eur_sqm": 3157.0,
+    "slope_per_year": -63.14,
+    "price_2025_eur_sqm": 2525.6
+  },
+  {
+    "neighborhood": "la Sagrera",
+    "district": "9",
+    "price_2015_eur_sqm": 2498.0,
+    "slope_per_year": -1.81,
+    "price_2025_eur_sqm": 2479.9
+  },
+  {
+    "neighborhood": "la Salut",
+    "district": "6",
+    "price_2015_eur_sqm": 2825.0,
+    "slope_per_year": -56.5,
+    "price_2025_eur_sqm": 2260.0
+  },
+  {
+    "neighborhood": "la Teixonera",
+    "district": "7",
+    "price_2015_eur_sqm": 1870.0,
+    "slope_per_year": -37.4,
+    "price_2025_eur_sqm": 1496.0
+  },
+  {
+    "neighborhood": "la Trinitat Vella",
+    "district": "9",
+    "price_2015_eur_sqm": 1394.0,
+    "slope_per_year": -27.88,
+    "price_2025_eur_sqm": 1115.2
+  },
+  {
+    "neighborhood": "la Verneda i la Pau",
+    "district": "10",
+    "price_2015_eur_sqm": 2023.0,
+    "slope_per_year": 2.37,
+    "price_2025_eur_sqm": 2046.65
+  },
+  {
+    "neighborhood": "la Vila Olmpica del Poblenou",
+    "district": "10",
+    "price_2015_eur_sqm": 4728.0,
+    "slope_per_year": -94.56,
+    "price_2025_eur_sqm": 3782.4
+  },
+  {
+    "neighborhood": "la Vila de Gràcia",
+    "district": "6",
+    "price_2015_eur_sqm": 3655.0,
+    "slope_per_year": -2.47,
+    "price_2025_eur_sqm": 3630.35
+  },
+  {
+    "neighborhood": "les Corts",
+    "district": "4",
+    "price_2015_eur_sqm": 3825.0,
+    "slope_per_year": -76.5,
+    "price_2025_eur_sqm": 3060.0
+  },
+  {
+    "neighborhood": "les Roquetes (4)",
+    "district": "8",
+    "price_2015_eur_sqm": 1529.0,
+    "slope_per_year": -30.58,
+    "price_2025_eur_sqm": 1223.2
+  }
+]

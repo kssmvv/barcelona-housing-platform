@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Artifacts
+artifacts/*.zip
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Environment
+.env
+venv/
+
+
